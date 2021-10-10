@@ -2,33 +2,31 @@
 <html>
     <head>
         <body>
-            <a href="github.com">html</a>
+            <a href="https://github.com/WeronikaMarciniak/HtmlCanvas/blob/main/LAB1Marciniak.html">html</a>
             <a href="https://github.com/WeronikaMarciniak/HtmlCanvas"> kod</a>
             <p> Laboratorium zrealizowane w %</p>
             <br>
             <canvas id="myCanvas" width="800" height="600"></canvas>
             <!--Zadanie 1-->
             <script>
-                var c = document.getElementById("myCanvas");
-                var ctx = c.getContext("2d");
-                ctx.beginPath();
-                ctx.arc(95, 50, 40, 0, 2 * Math.PI);
-                ctx.stroke();
-                ctx.fillStyle="#0000FF";
-                ctx.fill();
-                function colorChange()
-                {
-                if(ctx.fillStyle="#0000FF")
-                {
-                    ctx.fillStyle="#00FF00";
-                }
-                else{
-                    ctx.fillStyle="#0000FF";
-                }
- 
                 
-                }
-                setTimeout(colorChange, 1000);
+                var canvas = document.getElementById("myCanvas");
+                var context = canvas.getContext("2d");
+   
+
+                 var i = 0;
+                 function drawThings(context) {
+                 context.fillStyle = i === 0 ? 'green' : 'blue';
+                 context.beginPath();
+                 context.arc(95, 50, 40, 0, 2 * Math.PI);
+                 context.stroke();
+                 context.fill();   
+                 if (i === 0)
+                    i = 1;
+                else
+                i = 0;
+                 }
+                 setInterval(function() {drawThings(context);}, 100)
             
                 </script> 
         </body>
