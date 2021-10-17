@@ -7,8 +7,30 @@
             <script>
                 var canvas = document.getElementById("myCanvas");
                 var context = canvas.getContext("2d");
-                context.fillStyle = "#0000FF";
-                context.fillRect(0,570, 50, 50);
+                x = 0;
+                y = 570; 
+                w = 50;
+                h = 50; 
+                function drawRect(x,y,w,h) {
+                context.fillStyle = '#0000FF'; 
+                context.fillRect(x, y, w, h); 
+                }
+
+             drawRect(x,y,w,h); 
+
+            window.onkeydown = function(event) {
+            var keyPressed = event.keyCode; 
+  
+            if(keyPressed === 39 && x<=735){ 
+                x = x+20; //turning right
+            }
+            else if(keyPressed === 37 && x>0){
+               x = x-20; //turning left
+            }
+
+		    context.clearRect(0,0, 800, 620);
+            drawRect(x,y,w,h);
+        };
             </script>
         </body>
 </html>
