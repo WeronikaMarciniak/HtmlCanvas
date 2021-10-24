@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+<canvas id="myCanvas" width="800" height="600" style="background-color:#696969"></canvas>
+
+<script>
+    var canvas  = document.getElementById("myCanvas");
+
+    window.addEventListener("keydown", moveCar, false);
+
+    let ctx = canvas.getContext("2d");
+    let carX = (canvas.width - 40) / 2;
+    let carY = canvas.height-100;
+    let carWidth = 40;
+    let carHeight = 60;
+
+    car_image = new Image();
+    car_image.src = 'myimage.png';
+    car_image.onload = function() {
+        drawCar();
+    }
+
+    let cars = [];
+
+    function refresh() {
+        ctx.clearRect(0, 0, 800, 600);
+        drawCar();
+        cars.forEach(element => {
+            drawCar(element[0], element[1]);
+            element[1] -= 10;
+            if (element[1] < 0)
+                cars.splice(cars.indexOf(element, 0), 1);
+        })
+    }
+    window.setInterval(refresh,50);
+
+    refresh();
+
+    function moveCar(e) {
+        switch(e.keyCode) {
+            case 37:
+                if(carX !=0){
+                    carX -= 20;
+                }
+                break;
+            case 39:
+                if(carX != canvas.width-40){
+                    carX += 20;
+                }
+                break;
+                case 38:
+                if(carY !=0){
+                    carY -= 20;
+                }
+                break;
+            case 40:
+                if(carY != canvas.height-40){
+                    carY += 20;
+                }
+                break;
+        }
+    }
+
+    function drawCar(){
+        ctx.beginPath();
+        ctx.drawImage(car_image, carX, carY, carWidth, carHeight)
+    }
+
+
+
+</script>
+
+</body>
+</html>
