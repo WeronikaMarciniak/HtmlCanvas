@@ -1,94 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 </head>
+
 <body>
-<canvas id="myCanvas" width="800" height="600" ></canvas>
+    <canvas id="myCanvas" width="800" height="600" style="background-color:#696969"></canvas>
 
-<script>
-    var canvas  = document.getElementById("myCanvas");
+    <script>
+        var canvas = document.getElementById("myCanvas");
 
-    window.addEventListener("keydown", moveCar, false);
+        window.addEventListener("keydown", moveCar, false);
 
-    let ctx = canvas.getContext("2d");
-    let carX = (canvas.width - 40) / 2;
-    let carY = canvas.height-100;
-    let carWidth = 40;
-    let carHeight = 60;
+        var ctx = canvas.getContext("2d");
+        var carWidth = 40;
+        var carHeight = 60;
+        var carX = 475;
+        var carY = canvas.height - 120;
+        var stripes = [];
+        var stripesWidth = 20;
+        var stripesHeight = 60;
+        var stripesStartX = 130;
+        var stripesStartY = 600;
+        var roadWidth = 500;
+        var stripeMove = 0;
 
-    car_image = new Image();
-    car_image.src = 'myimage.png';
-    car_image.onload = function() {
-        drawCar();
-    }
 
-    let cars = [];
-
-    function refresh() {
-        ctx.clearRect(0, 0, 800, 600);
-        drawCar();
-        cars.forEach(element => {
-            drawCar(element[0], element[1]);
-            element[1] -= 10;
-            if (element[1] < 0)
-                cars.splice(cars.indexOf(element, 0), 1);
-        })
-    }
-    window.setInterval(refresh,50);
-
-    refresh();
-
-    function moveCar(e) {
-        switch(e.keyCode) {
-            case 37:
-                if(carX !=0){
-                    carX -= 20;
-                }
-                break;
-            case 39:
-                if(carX != canvas.width-40){
-                    carX += 20;
-                }
-                break;
-                case 38:
-                if(carY !=0){
-                    carY -= 20;
-                }
-                break;
-            case 40:
-                if(carY != canvas.height-40){
-                    carY += 20;
-                }
-                break;
+        for (var i = 0; i < 12; i++) {
+            stripes.push([stripesStartX, stripesStartY - (i * stripesHeight)]);
         }
-    }
+        function drawCar() {
+            ctx.beginPath();
+            ctx.rect(carX, carY, carWidth, carHeight);
+            ctx.fillStyle = "#0000FF";
+            ctx.fill();
+        }
+        drawCar();
+        function moveCar(e) {
+            switch (e.keyCode) {
+                case 37:
+                    if (carX >= stripes[1][0] + stripesWidth + 5) {
+                        carX -= 20;
+                    }
+                    break;
+                case 39:
+                    if (carX <= stripes[1][0] + roadWidth - 50) {
+                        carX += 20;
+                    }
+                    break;
+            }
+        }
+        function drawRoad() {
+            for (var i = 0; i < 10; i++) {
+                ctx.beginPath();
+                ctx.moveTo(stripes[i][0], stripes[i][1]);
+                ctx.lineTo(stripes[i][0] + stripesWidth, stripes[i][1]);
+                ctx.lineTo(stripes[i + 1][0] + stripesWidth, stripes[i + 1][1]);
+                ctx.lineTo(stripes[i + 1][0], stripes[i + 1][1]);
+                if (i % 2 === 0) {
+                    if (stripeMove === 0)
+                        ctx.fillStyle = '#FF0000';
+                    else
+                        ctx.fillStyle = '#FFFFFF';
+                }
+                else {
+                    if (stripeMove === 1)
+                        ctx.fillStyle = '#FF0000';
+                    else
+                        ctx.fillStyle = '#FFFFFF';
+                }
+                ctx.fill();
 
-    function drawCar(){
-        ctx.beginPath();
-        ctx.drawImage(car_image, carX, carY, carWidth, carHeight)
-    }
-    const config = {
-    linesStartingPosition: -40
-    } 
-    window.setInterval(whiteStripes, 50);
-    function whiteStripes(){
-    ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientWidth);
-    ctx.fillStyle = "#696969"; //road color
-    ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+                ctx.beginPath();
+                ctx.moveTo(stripes[i][0] + roadWidth, stripes[i][1]);
+                ctx.lineTo(stripes[i][0] + stripesWidth + roadWidth, stripes[i][1]);
+                ctx.lineTo(stripes[i + 1][0] + stripesWidth + roadWidth, stripes[i + 1][1]);
+                ctx.lineTo(stripes[i + 1][0] + roadWidth, stripes[i + 1][1]);
+                if (i % 2 === 0) {
+                    if (stripeMove === 0)
+                        ctx.fillStyle = '#FF0000';
+                    else
+                        ctx.fillStyle = '#FFFFFF';
+                }
+                else {
+                    if (stripeMove === 1)
+                        ctx.fillStyle = '#FF0000';
+                    else
+                        ctx.fillStyle = '#FFFFFF';
+                }
+                ctx.fill();
+            }
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, canvas.height);
+            for (var j = 0; j < 11; j++) {
+                ctx.lineTo(stripes[j][0], stripes[j][1]);
+            }
+            ctx.fillStyle = '#00FF00';
+            ctx.fill();
 
-    ctx.fillStyle = "white"; //stripes on the road color
+            ctx.beginPath();
+            ctx.moveTo(800, 0);
+            ctx.lineTo(800, canvas.height);
+            for (var j = 0; j < 11; j++) {
+                ctx.lineTo(stripes[j][0] + roadWidth + stripesWidth, stripes[j][1]);
+            }
+            ctx.fillStyle = '#00FF00';
+            ctx.fill();
 
-    for (var i = 1; i < 1800; i++) {
-        ctx.fillRect(canvas.clientWidth / 2, config.linesStartingPosition + i * 45 - 1500, 10, 30);
-    }
+            ctx.beginPath();
+            for (var j = stripeMove; j < 11; j += 2) {
+                ctx.moveTo(stripes[j][0] + (roadWidth / 2), stripes[j][1]);
+                ctx.lineTo(stripes[j][0] + (stripesWidth + roadWidth) / 2, stripes[j][1]);
+                ctx.lineTo(stripes[j + 1][0] + (stripesWidth + roadWidth) / 2, stripes[j + 1][1]);
+                ctx.lineTo(stripes[j + 1][0] + (roadWidth / 2), stripes[j + 1][1]);
+            }
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
 
-    config.linesStartingPosition += 10;
+            if (stripeMove === 0)
+                stripeMove = 1;
+            else
+                stripeMove = 0;
+        }
 
-}
+        function refresh() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRoad();
+            drawCar();
+        }
+        window.setInterval(refresh, 100);
 
+        refresh();
 
-
-</script>
+    </script>
 
 </body>
+
 </html>
