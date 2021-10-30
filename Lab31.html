@@ -1,140 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-</head>
-
-<body>
-    <canvas id="myCanvas" width="800" height="600" style="background-color:#696969"></canvas>
-
-    <script>
-        var canvas = document.getElementById("myCanvas");
-
-        window.addEventListener("keydown", moveCar, false);
-
-        var ctx = canvas.getContext("2d");
-        var carWidth = 40;
-        var carHeight = 60;
-        var carX = 475;
-        var carY = canvas.height - 120;
-        var stripes = [];
-        var stripesWidth = 20;
+<html>
+	<body>
+	  <canvas id="myCanvas" width="800" height="600" style="background-color:#696969">
+	  </canvas>
+	</body>
+	
+	<script>
+       	var canvas = document.getElementById("myCanvas");
+		var ctx = canvas.getContext("2d");
+        var carWidth = 40
+		var carHeight = 60
+		var carX = 475
+		var carY= (canvas.height)-120
+		var speed =9
+		var stripes = [];
+		var stripesWidth = 20;
         var stripesHeight = 60;
-        var stripesStartX = 130;
-        var stripesStartY = 600;
-        var roadWidth = 500;
-        var stripeMove = 0;
+		var rightPressed = false
+		var leftPressed = false
+		var counter = 0
+        var rotateParam=0;
+		var reqAnimFr;
+		class Stripe{
+			constructor(x, y, width, height, color, speed) {
+				this.x = x;
+				this.y = y;
+				this.width = width;
+				this.height = height;
+				this.color = color;
+				this.speed = speed;
+			}
 
+			drawRectangle() {	drawRect(this.x, this.y, this.width, this.height,this.color);}
 
-        for (var i = 0; i < 12; i++) {
-            stripes.push([stripesStartX, stripesStartY - (i * stripesHeight)]);
-        }
-        function drawCar() {
-            ctx.beginPath();
-            ctx.rect(carX, carY, carWidth, carHeight);
-            ctx.fillStyle = "#0000FF";
-            ctx.fill();
-        }
-        drawCar();
-        function moveCar(e) {
-            switch (e.keyCode) {
-                case 37:
-                    if (carX >= stripes[1][0] + stripesWidth + 5) {
-                        carX -= 20;
-                    }
-                    break;
-                case 39:
-                    if (carX <= stripes[1][0] + roadWidth - 50) {
-                        carX += 20;
-                    }
-                    break;
-            }
-        }
-        function drawRoad() {
-            for (var i = 0; i < 10; i++) {
-                ctx.beginPath();
-                ctx.moveTo(stripes[i][0], stripes[i][1]);
-                ctx.lineTo(stripes[i][0] + stripesWidth, stripes[i][1]);
-                ctx.lineTo(stripes[i + 1][0] + stripesWidth, stripes[i + 1][1]);
-                ctx.lineTo(stripes[i + 1][0], stripes[i + 1][1]);
-                if (i % 2 === 0) {
-                    if (stripeMove === 0)
-                        ctx.fillStyle = '#FF0000';
-                    else
-                        ctx.fillStyle = '#FFFFFF';
-                }
-                else {
-                    if (stripeMove === 1)
-                        ctx.fillStyle = '#FF0000';
-                    else
-                        ctx.fillStyle = '#FFFFFF';
-                }
-                ctx.fill();
+			update() {	this.y = this.y + this.speed;}
+		}
+		function rand(min, max) {
+			min = Math.ceil(min); max = Math.floor(max);
+			return Math.floor(Math.random() * (max - min)) + min;
+		}
 
-                ctx.beginPath();
-                ctx.moveTo(stripes[i][0] + roadWidth, stripes[i][1]);
-                ctx.lineTo(stripes[i][0] + stripesWidth + roadWidth, stripes[i][1]);
-                ctx.lineTo(stripes[i + 1][0] + stripesWidth + roadWidth, stripes[i + 1][1]);
-                ctx.lineTo(stripes[i + 1][0] + roadWidth, stripes[i + 1][1]);
-                if (i % 2 === 0) {
-                    if (stripeMove === 0)
-                        ctx.fillStyle = '#FF0000';
-                    else
-                        ctx.fillStyle = '#FFFFFF';
-                }
-                else {
-                    if (stripeMove === 1)
-                        ctx.fillStyle = '#FF0000';
-                    else
-                        ctx.fillStyle = '#FFFFFF';
-                }
-                ctx.fill();
-            }
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(0, canvas.height);
-            for (var j = 0; j < 11; j++) {
-                ctx.lineTo(stripes[j][0], stripes[j][1]);
-            }
-            ctx.fillStyle = '#00FF00';
-            ctx.fill();
+		document.addEventListener('keydown', function(e) {
+			e.preventDefault();
+			if (e.keyCode === 39) rightPressed = true;
+			if (e.keyCode === 37) leftPressed = true;
+		});
 
-            ctx.beginPath();
-            ctx.moveTo(800, 0);
-            ctx.lineTo(800, canvas.height);
-            for (var j = 0; j < 11; j++) {
-                ctx.lineTo(stripes[j][0] + roadWidth + stripesWidth, stripes[j][1]);
-            }
-            ctx.fillStyle = '#00FF00';
-            ctx.fill();
+		document.addEventListener('keyup', function(e) {
+			e.preventDefault();
+			if (e.keyCode === 39) rightPressed = false;
+			if (e.keyCode === 37) leftPressed = false;
+		});
 
-            ctx.beginPath();
-            for (var j = stripeMove; j < 11; j += 2) {
-                ctx.moveTo(stripes[j][0] + (roadWidth / 2), stripes[j][1]);
-                ctx.lineTo(stripes[j][0] + (stripesWidth + roadWidth) / 2, stripes[j][1]);
-                ctx.lineTo(stripes[j + 1][0] + (stripesWidth + roadWidth) / 2, stripes[j + 1][1]);
-                ctx.lineTo(stripes[j + 1][0] + (roadWidth / 2), stripes[j + 1][1]);
-            }
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fill();
+		function drawRect(x,y,width,heigth,color) {
+			ctx.beginPath();
+			ctx.rect(x,y,width,heigth);
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.closePath();
+		};
 
-            if (stripeMove === 0)
-                stripeMove = 1;
-            else
-                stripeMove = 0;
-        }
+		function drawArc(x,y,color){
+			ctx.beginPath()
+			ctx.arc(x,y,5,0,Math.PI*2,true);
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.closePath();
+		}
+		function drawCar(x,y,width,heigth,color){
+			drawRect(x,y,width,heigth,color);
+			drawArc(x,y+15,color);
+			drawArc(x,y+45,color);
+			drawArc(x+width,y+15,color);
+			drawArc(x+width,y+45,color);
+		}
+		function drawRoadSides(){
+			
+			drawRect(-100, -400, 250, 1400,"#00FF00");
+			drawRect(600, -400, 250, 1400,"#00FF00");
+		};	
+		function stopAnimation() {window.cancelAnimationFrame(reqAnimFr);}
 
-        function refresh() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawRoad();
-            drawCar();
-        }
-        window.setInterval(refresh, 100);
+		function animate(){
+			ctx.clearRect(0,0, 800,600);
+			reqAnimFr= window.requestAnimationFrame(animate);
+			counter+=1;
+			if (rightPressed && carX<530) {
+        		 carX += speed;
+    		} else if (leftPressed && carX>180) {
+        		carX -= speed;
+    		};
 
-        refresh();
+			ctx.save();
+		
+			if(rotateParam==1){
+				ctx.translate(-150+canvas.width/2,canvas.height/2);
+				ctx.rotate(10 * Math.PI / 180);
+				ctx.translate(150-canvas.width/2,-canvas.height/2);
+			};
+			if(rotateParam==2){
+				ctx.translate(-150+canvas.width/2,canvas.height/2);
+				ctx.rotate(-(10 * Math.PI / 180));
+				ctx.translate(150-canvas.width/2,-canvas.height/2);
+			};
 
-    </script>
+			drawRoadSides();
+			
+			if(counter%20==0){
+				stripes.push(new Stripe(150,-100,stripesWidth,stripesHeight,"#FF0000",7));
+				stripes.push(new Stripe(150,-170,stripesWidth,stripesHeight,"#FFFFFF",7));
+				stripes.push(new Stripe(580,-100,stripesWidth,stripesHeight,"#FF0000",7));
+				stripes.push(new Stripe(580,-170,stripesWidth,stripesHeight,"#FFFFFF",7));
+				stripes.push(new Stripe(360,-100,stripesWidth,stripesHeight,"#FFFFFF",7));
+				
+			};
+			stripes.forEach(function (stripe, i) {
+				stripe.drawRectangle();
+				stripe.update();
+				if(stripe.y > canvas.height + 100) stripes.splice(i, 1);
+			});
+			
+			drawCar(carX, carY, carWidth, carHeight,"#0000FF");
+			ctx.restore();
+			
+			if(counter%300==0){
+			speed+=1;
+			}
+			if(counter%400==0)rotateParam=1;
+			if(counter%800==0)rotateParam=0;
+			if(counter%900==0)rotateParam=2;
+		};
+	animate();
 
-</body>
-
+	</script>
 </html>
