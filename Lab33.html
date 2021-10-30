@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+	<body>
+	  <canvas id="myCanvas" width="800" height="600" style="background-color:#696969">
+	  </canvas>
+	</body>
+	
+	<script>
+       	var canvas = document.getElementById("myCanvas");
+		var ctx = canvas.getContext("2d");
+        var carWidth = 40
+		var carHeight = 60
+		var carX = 475
+		var carY= (canvas.height)-120
+		var speed =9
+		var stripes = [];
+		var stripesWidth = 20;
+        var stripesHeight = 60;
+		var rightPressed = false
+		var leftPressed = false
+		var counter = 0
+        var rotateParam=0;
+		var reqAnimFr;
+        var obstacles=[];
+        var obstacleSpeed=7;
+        var freq=130;
+        var bonuses =[];
+        var score = 0;
+        var bonusSpeed=7;
+		class Stripe{
+			constructor(x, y, width, height, color, speed) {
+				this.x = x;
+				this.y = y;
+				this.width = width;
+				this.height = height;
+				this.color = color;
+				this.speed = speed;
+			}
+
+			drawRectangle() {	drawRect(this.x, this.y, this.width, this.height,this.color);}
+
+			update() {	this.y = this.y + this.speed;}
+		}
+        class Obstacle{
+			constructor(x, y, width, height, color, speed) {
+				this.x = x;
+				this.y = y;
+				this.width = width;
+				this.height = height;
+				this.color = color;
+				this.speed = speed;
+			}
+
+			drawRectangle() {drawRect(this.x, this.y, this.width, this.height,this.color);}
+
+
+			update() {this.y = this.y + this.speed;}
+		}
+        class Bonus{
+			constructor(x, y, width, height, color, speed) {
+				this.x = x;
+				this.y = y;
+				this.width = width;
+				this.height = height;
+				this.color = color;
+				this.speed = speed;
+			}
+
+			drawRectangle() {	drawRect(this.x, this.y, this.width, this.height,this.color);}
+
+			update() {	this.y = this.y + this.speed;}
+		}
+		function rand(min, max) {
+			min = Math.ceil(min); max = Math.floor(max);
+			return Math.floor(Math.random() * (max - min)) + min;
+		}
+
+		document.addEventListener('keydown', function(e) {
+			e.preventDefault();
+			if (e.keyCode === 39) rightPressed = true;
+			if (e.keyCode === 37) leftPressed = true;
+		});
+
+		document.addEventListener('keyup', function(e) {
+			e.preventDefault();
+			if (e.keyCode === 39) rightPressed = false;
+			if (e.keyCode === 37) leftPressed = false;
+		});
+
+		function drawRect(x,y,width,heigth,color) {
+			ctx.beginPath();
+			ctx.rect(x,y,width,heigth);
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.closePath();
+		};
+
+		function drawArc(x,y,color){
+			ctx.beginPath()
+			ctx.arc(x,y,5,0,Math.PI*2,true);
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.closePath();
+		}
+		function drawCar(x,y,width,heigth,color){
+			drawRect(x,y,width,heigth,color);
+			drawArc(x,y+15,color);
+			drawArc(x,y+45,color);
+			drawArc(x+width,y+15,color);
+			drawArc(x+width,y+45,color);
+		}
+		function drawRoadSides(){
+			
+			drawRect(-100, -400, 250, 1400,"#00FF00");
+			drawRect(600, -400, 250, 1400,"#00FF00");
+		};	
+        function drawScore(x,y,score,text) {
+			ctx.font = "20px Liberation Sans";
+			ctx.fillStyle = "#000000";
+			ctx.fillText(text + score, x, y);
+		}
+		function stopAnimation() {window.cancelAnimationFrame(reqAnimFr);}
+
+		function animate(){
+			ctx.clearRect(0,0, 800,600);
+			reqAnimFr= window.requestAnimationFrame(animate);
+			counter+=1;
+			if (rightPressed && carX<530) {
+        		 carX += speed;
+    		} else if (leftPressed && carX>180) {
+        		carX -= speed;
+    		};
+
+			ctx.save();
+		
+			if(rotateParam==1){
+				ctx.translate(-150+canvas.width/2,canvas.height/2);
+				ctx.rotate(10 * Math.PI / 180);
+				ctx.translate(150-canvas.width/2,-canvas.height/2);
+			};
+			if(rotateParam==2){
+				ctx.translate(-150+canvas.width/2,canvas.height/2);
+				ctx.rotate(-(10 * Math.PI / 180));
+				ctx.translate(150-canvas.width/2,-canvas.height/2);
+			};
+
+			drawRoadSides();
+			
+			if(counter%20==0){
+				stripes.push(new Stripe(150,-100,stripesWidth,stripesHeight,"#FF0000",7));
+				stripes.push(new Stripe(150,-170,stripesWidth,stripesHeight,"#FFFFFF",7));
+				stripes.push(new Stripe(580,-100,stripesWidth,stripesHeight,"#FF0000",7));
+				stripes.push(new Stripe(580,-170,stripesWidth,stripesHeight,"#FFFFFF",7));
+				stripes.push(new Stripe(360,-100,stripesWidth,stripesHeight,"#FFFFFF",7));
+				
+			};
+			stripes.forEach(function (stripe, i) {
+				stripe.drawRectangle();
+				stripe.update();
+				if(stripe.y > canvas.height + 100) stripes.splice(i, 1);
+			});
+            if(counter%freq==0) obstacles.push(new Obstacle(rand(250,500),-100,50,50,"#FFFF00",obstacleSpeed));
+			obstacles.forEach(function (obstacle, i) {
+				obstacle.drawRectangle();
+				obstacle.update();
+				if(carX < obstacle.x + obstacle.width && carX + carWidth > obstacle.x && carY < obstacle.y + obstacle.height && carHeight + carY > obstacle.y){
+					stopAnimation();
+					window.alert("Wjechałeś w przeszkodę! \nZdobyte punkty: " + score +"\nOdśwież stronę aby zacząć od nowa.");
+				};
+				if(obstacles.y > canvas.height + 100) obstacles.splice(i, 1);
+			});
+			if(counter%freq==0) bonuses.push(new Bonus(rand(250,500),-100,20,20,"#FF00FF",bonusSpeed));
+			bonuses.forEach(function (bonus, i) {
+				bonus.drawRectangle();
+				bonus.update();
+				if(carX < bonus.x + bonus.width && carX + carWidth > bonus.x && carY < bonus.y + bonus.height && carHeight + carY > bonus.y){
+					score+=20;
+					bonuses.splice(i, 1);
+				};
+				if(bonus.y > canvas.height + 100) bonuses.splice(i, 1);
+			});
+			drawCar(carX, carY, carWidth, carHeight,"#0000FF");
+			ctx.restore();
+			drawRect(650, -400, 350, 1400,"#00FF00");
+			drawScore(655,(canvas.height/2),score,"Score: ");
+			if(counter%300==0){
+			speed+=1;
+            obstacleSpeed+=1;
+            freq-=10;
+			}
+			if(counter%400==0)rotateParam=1;
+			if(counter%800==0)rotateParam=0;
+			if(counter%900==0)rotateParam=2;
+		};
+	animate();
+
+	</script>
+</html>
