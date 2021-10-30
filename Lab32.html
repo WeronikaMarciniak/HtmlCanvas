@@ -39,19 +39,19 @@
 			update() {	this.y = this.y + this.speed;}
 		}
         class Obstacle{
-			constructor(x, y, width, height, color, velocity) {
+			constructor(x, y, width, height, color, speed) {
 				this.x = x;
 				this.y = y;
 				this.width = width;
 				this.height = height;
 				this.color = color;
-				this.velocity = velocity;
+				this.speed = speed;
 			}
 
 			drawRectangle() {drawRect(this.x, this.y, this.width, this.height,this.color);}
 
 
-			update() {this.y = this.y + this.velocity;}
+			update() {this.y = this.y + this.speed;}
 		}
 		function rand(min, max) {
 			min = Math.ceil(min); max = Math.floor(max);
