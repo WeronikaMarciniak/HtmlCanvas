@@ -137,7 +137,7 @@
 				stripe.update();
 				if(stripe.y > canvas.height + 100) stripes.splice(i, 1);
 			});
-            if(counter%freqOfObstacle==0) obstacles.push(new Obstacle(rand(100,500),-100,50,50,"#FFFF00",obstacleSpeed));
+            if(counter%freqOfObstacle==0) obstacles.push(new Obstacle(rand(250,500),-100,50,50,"#FFFF00",obstacleSpeed));
 			obstacles.forEach(function (obstacle, i) {
 				obstacle.drawRectangle();
 				obstacle.update();
